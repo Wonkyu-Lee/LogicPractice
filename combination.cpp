@@ -31,6 +31,7 @@ void combRecurse(int arr[], int start, int end, int r, int result[], int index, 
         result[index] = arr[i];
         combRecurse(arr, i + 1, end, r, result, index + 1, cb);
 
+        // skip fixing duplicates
         if (arr[i] == arr[i + 1])
             ++i;
     }
@@ -64,6 +65,7 @@ void combRecurse(int arr[], int n, int r, int start, int result[], int index, Ca
     result[index] = arr[start];
     combRecurse(arr, n, r, start + 1, result, index + 1, cb);
 
+    // skip fixing duplicates
     if (arr[start] == arr[start + 1])
         ++start;
 
