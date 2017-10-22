@@ -19,41 +19,41 @@ int countCombinations(int n, int r) {
 
 namespace solution1 {
 
-using Visitor = function<void(int*, int)>;
+using Callback = function<void(int[], int)>;
 
-void visitCombinationsRecurse(int* array, int* combination, int start, int end, int index, int r, Visitor visit) {
+void combRecurse(int arr[], int start, int end, int r, int result[], int index, Callback cb) {
     if (index == r) {
-        visit(combination, r);
+        cb(result, r);
         return;
     }
 
     for (int i = start; (i <= end) && (r - index <= end - i + 1); ++i) {
-        combination[index] = array[i];
-        visitCombinationsRecurse(array, combination, i + 1, end, index + 1, r, visit);
+        result[index] = arr[i];
+        combRecurse(arr, i + 1, end, r, result, index + 1, cb);
 
-        if (array[i] == array[i + 1])
+        if (arr[i] == arr[i + 1])
             ++i;
     }
 }
 
-void visitCombinations(int* array, int n, int r, Visitor visit) {
-    int copy[n];
-    for (int i = 0; i < n; ++i) { copy[i] = array[i]; }
-    sort(copy, copy + n);
+void combination(int arr[], int n, int r, Callback cb) {
+    int sorted[n];
+    copy(arr, arr + n, sorted);
+    sort(sorted, sorted + n);
 
-    int combination[r];
-    visitCombinationsRecurse(copy, combination, 0, n - 1, 0, r, visit);
+    int result[r];
+    combRecurse(sorted, 0, n - 1, r, result, 0, cb);
 }
 
 } // namespace solution1
 
 namespace solution2 {
 
-using Visitor = function<void(int*, int)>;
+using Callback = function<void(int[], int)>;
 
-void visitCombinationsRecurse(int* array, int n, int r, int index, int* combination, int start, Visitor visit) {
+void combRecurse(int arr[], int n, int r, int start, int result[], int index, Callback cb) {
     if (index == r) {
-        visit(combination, r);
+        cb(result, r);
         return;
     }
 
@@ -61,22 +61,22 @@ void visitCombinationsRecurse(int* array, int n, int r, int index, int* combinat
         return;
     }
 
-    combination[index] = array[start];
-    visitCombinationsRecurse(array, n, r, index + 1, combination, start + 1, visit);
+    result[index] = arr[start];
+    combRecurse(arr, n, r, start + 1, result, index + 1, cb);
 
-    if (array[start] == array[start + 1])
+    if (arr[start] == arr[start + 1])
         ++start;
 
-    visitCombinationsRecurse(array, n, r, index, combination, start + 1, visit);
+    combRecurse(arr, n, r, start + 1, result, index, cb);
 }
 
-void visitCombinations(int* array, int n, int r, Visitor visit) {
-    int copy[n];
-    for (int i = 0; i < n; ++i) { copy[i] = array[i]; }
-    sort(copy, copy + n);
+void combination(int arr[], int n, int r, Callback cb) {
+    int sorted[n];
+    copy(arr, arr + n, sorted);
+    sort(sorted, sorted + n);
 
-    int combination[r];
-    visitCombinationsRecurse(copy, n, r, 0, combination, 0, visit);
+    int result[r];
+    combRecurse(sorted, n, r, 0, result, 0, cb);
 }
 
 } // namespace solution2
@@ -84,7 +84,7 @@ void visitCombinations(int* array, int n, int r, Visitor visit) {
 
 namespace trace1 {
 
-void combRecurse(int arr[], int start, int end, int r, int data[], int index, int indentation) {
+void combRecurse(int arr[], int start, int end, int r, int result[], int index, int indentation) {
 
     auto printIndent = [](int indentation) {
         for (int i = 0; i < indentation; ++i) {
@@ -102,7 +102,7 @@ void combRecurse(int arr[], int start, int end, int r, int data[], int index, in
             printf("\b\b");
         printf("}, start:%d, end:%d, r:%d, data:{", start, end, r);
         for (int i = 0; i < index; ++i) {
-            printf("%d, ", data[i]);
+            printf("%d, ", result[i]);
         }
         for (int i = index; i < r; ++i) {
             printf(", ");
@@ -114,15 +114,15 @@ void combRecurse(int arr[], int start, int end, int r, int data[], int index, in
         printIndent(indentation + 1);
         printf("return1 combination: {");
         for (int i = 0; i < r; ++i) {
-            printf("%d, ", data[i]);
+            printf("%d, ", result[i]);
         }
         printf("\b\b}\n");
         return;
     }
 
     for (int i = start; (i <= end) && (r - index <= end - i + 1); ++i) {
-        data[index] = arr[i];
-        combRecurse(arr, i + 1, end, r, data, index + 1, indentation + 1);
+        result[index] = arr[i];
+        combRecurse(arr, i + 1, end, r, result, index + 1, indentation + 1);
         if (arr[i] == arr[i + 1]) {
             printIndent(indentation + 1);
             printf("skip arr[%d]\n", i + 1);
@@ -135,17 +135,19 @@ void combRecurse(int arr[], int start, int end, int r, int data[], int index, in
 }
 
 void combination(int arr[], int n, int r) {
-    int data[r];
-    sort(arr, arr + n);
-    combRecurse(arr, 0, n - 1, r, data, 0, 0);
+    int sorted[n];
+    copy(arr, arr + n, sorted);
+    sort(sorted, sorted + n);
+
+    int result[r];
+    combRecurse(sorted, 0, n - 1, r, result, 0, 0);
 }
 
 } // trace1
 
 namespace trace2 {
 
-// Call tracking
-void combRecurse(int arr[], int n, int r, int start, int data[], int index, int indentation) {
+void combRecurse(int arr[], int n, int r, int start, int result[], int index, int indentation) {
 
     auto printIndent = [](int indentation) {
         for (int i = 0; i < indentation; ++i) {
@@ -163,7 +165,7 @@ void combRecurse(int arr[], int n, int r, int start, int data[], int index, int 
             printf("\b\b");
         printf("}, index: %d, data:{", index);
         for (int i = 0; i < index; ++i) {
-            printf("%d, ", data[i]);
+            printf("%d, ", result[i]);
         }
         for (int i = index; i < r; ++i) {
             printf(", ");
@@ -177,7 +179,7 @@ void combRecurse(int arr[], int n, int r, int start, int data[], int index, int 
             printIndent(indentation + 1);
             printf("return1 combination: {");
             for (int i = 0; i < r; ++i) {
-                printf("%d, ", data[i]);
+                printf("%d, ", result[i]);
             }
             printf("\b\b}\n");
         }
@@ -194,8 +196,8 @@ void combRecurse(int arr[], int n, int r, int start, int data[], int index, int 
         return;
     }
 
-    data[index] = arr[start];
-    combRecurse(arr, n, r, start + 1, data, index + 1, indentation + 1);
+    result[index] = arr[start];
+    combRecurse(arr, n, r, start + 1, result, index + 1, indentation + 1);
 
     if (arr[start] == arr[start + 1]) {
         printIndent(indentation + 1);
@@ -203,7 +205,7 @@ void combRecurse(int arr[], int n, int r, int start, int data[], int index, int 
         ++start;
     }
 
-    combRecurse(arr, n, r, start + 1, data, index, indentation + 1);
+    combRecurse(arr, n, r, start + 1, result, index, indentation + 1);
 
     {
         printIndent(indentation + 1);
@@ -212,9 +214,12 @@ void combRecurse(int arr[], int n, int r, int start, int data[], int index, int 
 }
 
 void combination(int arr[], int n, int r) {
-    int data[r];
-    sort(arr, arr + n);
-    combRecurse(arr, n, r, 0, data, 0, 0);
+    int sorted[n];
+    copy(arr, arr + n, sorted);
+    sort(sorted, sorted + n);
+
+    int result[r];
+    combRecurse(sorted, n, r, 0, result, 0, 0);
 }
 
 } // namespace trace2
@@ -232,33 +237,35 @@ TEST_CASE("Combination", "[combination]") {
     SECTION("[Solution1] Visit possible combinations") {
         int array[] = {1, 2, 2, 3};
         int n = sizeof(array)/sizeof(int);
-        int r = 2;
+        int r = 3;
 
         printf("[Solution1] Combinations: \n");
         int count = 0;
-        solution1::visitCombinations(array, n, r, [&count](int* array, int n) {
+        solution1::combination(array, n, r, [&count](int* array, int n) {
             for (int i = 0; i < n; ++i) {
                 printf("%d ", array[i]);
             }
             printf("\n");
             ++count;
         });
+        printf("\n");
     }
 
     SECTION("[Solution2] Visit possible combinations") {
         int array[] = {1, 2, 2, 3};
         int n = sizeof(array)/sizeof(int);
-        int r = 2;
+        int r = 3;
 
         printf("[Solution1] Combinations: \n");
         int count = 0;
-        solution2::visitCombinations(array, n, r, [&count](int* array, int n) {
+        solution2::combination(array, n, r, [&count](int* array, int n) {
             for (int i = 0; i < n; ++i) {
                 printf("%d ", array[i]);
             }
             printf("\n");
             ++count;
         });
+        printf("\n");
     }
 
     SECTION("[Trace1]") {
