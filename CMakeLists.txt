@@ -3,5 +3,5 @@ project(LogicPractice)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp combination.cpp)
+set(SOURCE_FILES main.cpp combination.cpp permutation.cpp)
 add_executable(LogicPractice ${SOURCE_FILES})

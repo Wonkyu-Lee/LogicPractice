@@ -112,7 +112,7 @@ void combRecurse(int arr[], int start, int end, int r, int result[], int index, 
 
     if (index == r) {
         printIndent(indentation + 1);
-        printf("return1 combination: {");
+        printf("return#1 result: {");
         for (int i = 0; i < r; ++i) {
             printf("%d, ", result[i]);
         }
@@ -131,7 +131,7 @@ void combRecurse(int arr[], int start, int end, int r, int result[], int index, 
     }
 
     printIndent(indentation + 1);
-    printf("return2\n");
+    printf("return#2\n");
 }
 
 void combination(int arr[], int n, int r) {
@@ -177,7 +177,7 @@ void combRecurse(int arr[], int n, int r, int start, int result[], int index, in
     if (index == r) {
         {
             printIndent(indentation + 1);
-            printf("return1 combination: {");
+            printf("return#1 result: {");
             for (int i = 0; i < r; ++i) {
                 printf("%d, ", result[i]);
             }
@@ -190,7 +190,7 @@ void combRecurse(int arr[], int n, int r, int start, int result[], int index, in
     if (n <= start) {
         {
             printIndent(indentation + 1);
-            printf("return2 [n: %d, start: %d]\n", n, start);
+            printf("return#2 [n: %d, start: %d]\n", n, start);
         }
 
         return;
@@ -209,7 +209,7 @@ void combRecurse(int arr[], int n, int r, int start, int result[], int index, in
 
     {
         printIndent(indentation + 1);
-        printf("return3\n");
+        printf("return#3\n");
     }
 }
 
@@ -241,9 +241,9 @@ TEST_CASE("Combination", "[combination]") {
 
         printf("[Solution1] Combinations: \n");
         int count = 0;
-        solution1::combination(array, n, r, [&count](int* array, int n) {
+        solution1::combination(array, n, r, [&count](int result[], int n) {
             for (int i = 0; i < n; ++i) {
-                printf("%d ", array[i]);
+                printf("%d ", result[i]);
             }
             printf("\n");
             ++count;
@@ -258,9 +258,9 @@ TEST_CASE("Combination", "[combination]") {
 
         printf("[Solution1] Combinations: \n");
         int count = 0;
-        solution2::combination(array, n, r, [&count](int* array, int n) {
+        solution2::combination(array, n, r, [&count](int result[], int n) {
             for (int i = 0; i < n; ++i) {
-                printf("%d ", array[i]);
+                printf("%d ", result[i]);
             }
             printf("\n");
             ++count;
