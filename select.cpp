@@ -54,8 +54,15 @@ TEST_CASE("Select", "[select]") {
     int arr[] = {5, 2, 9, 1, 7, 7, 3, 6, 4, 8};
     int n = sizeof(arr)/sizeof(int);
 
-    REQUIRE(sol1::select(arr, n, 2) == 3);
-    REQUIRE(sol1::select(arr, n, 6) == 7);
+    SECTION("nth_element") {
+        std::nth_element(arr, arr + 2, arr + n);
+        REQUIRE(arr[2] == 3);
+    }
+
+    SECTION("solution1") {
+        REQUIRE(sol1::select(arr, n, 2) == 3);
+        REQUIRE(sol1::select(arr, n, 6) == 7);
+    }
 }
 
 } // namespace

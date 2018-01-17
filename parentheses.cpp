@@ -10,25 +10,36 @@ namespace {
 using namespace std;
 
 int printParentheses(char str[], int pairCount, int lCount, int rCount) {
-    int l = lCount + rCount;
-    if (l == pairCount * 2) {
-        str[l] = '\0';
+    int length = lCount + rCount;
+    if (length == pairCount * 2) {
+        str[length] = '\0';
         cout << str << endl;
         return 1;
     }
 
     int count = 0;
     if (lCount > rCount) {
-        str[l] = '}';
+        str[length] = '}';
         count += printParentheses(str, pairCount, lCount, rCount + 1);
     }
 
     if (lCount < pairCount) {
-        str[l] = '{';
+        str[length] = '{';
         count += printParentheses(str, pairCount, lCount + 1, rCount);
     }
 
     return count;
+}
+
+int catalan(int n) {
+    int c[n + 1]; c[0] = 1;
+    for (int i = 1; i <= n; ++i) {
+        c[i] = 0;
+        for (int j = 0; j < i; ++j) {
+            c[i] += c[j] * c[i - 1 - j];
+        }
+    }
+    return c[n];
 }
 
 void printParentheses(int pairCount) {
@@ -36,10 +47,11 @@ void printParentheses(int pairCount) {
     char str[pairCount * 2 + 1];
     int count = printParentheses(str, pairCount, 0, 0);
     cout << "count: " << count << endl;
+    cout << "catalan: " << catalan(pairCount) << endl;
 }
 
 TEST_CASE("parentheses", "[parentheses]") {
-    printParentheses(4);
+    printParentheses(5);
 }
 
 } // namespace

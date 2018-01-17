@@ -31,32 +31,28 @@ void quickSort(int arr[], int p, int r) {
     quickSort(arr, q + 1, r);
 }
 
-void quickSort(int arr[], int n) {
-    quickSort(arr, 0, n - 1);
-}
-
 } // namespace sol1
 
 namespace sol2 {
 
+// 중복원소 있을 때 제대로 동작 안 함!
 int partition(int arr[], int p, int r) {
     int i = p;
     int j = r;
     int q = (p + r) / 2;
-    int x = arr[q];
+    int pivot = arr[q];
 
-    while (true) {
-        while (arr[i] < x)
-            ++i;
-
-        while (x < arr[j])
-            --j;
-
-        if (i >= j)
-            return i;
-
-        std::swap(arr[i], arr[j]);
+    while (i <= j) {
+        if (arr[i] > pivot) { // 왼쪽 보고
+            std::swap(arr[i], arr[j--]);
+        } else if (arr[j] <= pivot) { // 오른쪽 보고
+            std::swap(arr[i++], arr[j]);
+        } else {
+            i++;
+            j--;
+        }
     }
+    return i - 1;
 }
 
 void quickSort(int arr[], int p, int r) {
@@ -66,22 +62,53 @@ void quickSort(int arr[], int p, int r) {
     quickSort(arr, q + 1, r);
 }
 
-void quickSort(int arr[], int n) {
-    quickSort(arr, 0, n - 1);
+} // namespace sol2
+
+namespace sol3 {
+
+void partition(int arr[], int p, int r, int& l, int& u) {
+    l = p;
+    u = r;
+    int pivot = arr[r];
+
+    int i = l;
+    while (i <= u) {
+        if (arr[i] < pivot) {
+            std::swap(arr[l++], arr[i++]);
+        } else if (arr[i] > pivot) {
+            std::swap(arr[i], arr[u--]);
+        } else {
+            i++;
+        }
+    }
 }
 
-} // namespace sol2
+void quickSort(int arr[], int p, int r) {
+    if (p > r) return;
+    int l, u;
+    partition(arr, p, r, l, u);
+    quickSort(arr, p, l - 1);
+    quickSort(arr, u + 1, r);
+}
+
+} // namespace sol3
 
 
 TEST_CASE("Quick sort", "[quick sort]") {
     int arr[] = {5, 2, 9, 1, 7, 7, 3, 6, 4, 8};
     int n = sizeof(arr)/sizeof(int);
-    sol1::quickSort(arr, n);
+    auto demo = [&](std::function<void(int[],int,int)> quickSort) {
+        quickSort(arr, 0, n - 1);
 
-    for (int i = 0; i < n; ++i) {
-        printf("%d, ", arr[i]);
-    }
-    printf("\n");
+        for (int i = 0; i < n; ++i) {
+            printf("%d, ", arr[i]);
+        }
+        printf("\n");
+    };
+
+    demo(sol1::quickSort);
+    //demo(sol2::quickSort);
+    demo(sol3::quickSort);
 }
 
 } // namespace
