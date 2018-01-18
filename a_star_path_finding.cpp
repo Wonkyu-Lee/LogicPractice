@@ -59,21 +59,8 @@ struct Pos {
 
 class MinHeap {
     set<tuple<double, int, int>> _heap;
-    map<tuple<int, int>, double> _map; // TODO: umorderd_map으로 바꾸자..
+    map<tuple<int, int>, double> _map;
 public:
-    bool update(const Pos& pos, double value) {
-        if (!remove(pos))
-            return false;
-
-        add(pos, value);
-        return true;
-    }
-
-    void addOrUpdate(const Pos& pos, double value) {
-        remove(pos);
-        add(pos, value);
-    }
-
     bool empty() const {
         return _heap.empty();
     }
@@ -98,7 +85,19 @@ public:
         return _map.find({pos.r, pos.c}) != _map.end();
     }
 
-private:
+    bool update(const Pos& pos, double value) {
+        if (!remove(pos))
+            return false;
+
+        add(pos, value);
+        return true;
+    }
+
+    void addOrUpdate(const Pos& pos, double value) {
+        remove(pos);
+        add(pos, value);
+    }
+
     bool remove(const Pos& pos) {
         auto it = _map.find({pos.r, pos.c});
         if (it == _map.end())
@@ -109,9 +108,14 @@ private:
         return true;
     }
 
-    void add(const Pos& pos, double value) {
+    bool add(const Pos& pos, double value) {
+        if (contains(pos)) {
+            return false;
+        }
+
         _heap.insert({value, pos.r, pos.c});
         _map.insert({{pos.r, pos.c}, value});
+        return true;
     }
 };
 
@@ -170,21 +174,18 @@ public:
             }
         }
 
-        MinHeap S;
-        for (int r = 0; r < _rows; ++r) {
-            for (int c = 0; c < _cols; ++c) {
-                S.addOrUpdate(Pos(r, c), INF);
-            }
-        }
+        MinHeap open;
+        set<Pos> closed;
 
         TileInfo& srcInfo = info(src);
         srcInfo.g = 0;
-        S.update(src, srcInfo.f());
+        open.add(src, srcInfo.f());
 
         bool found = false;
-        while (!S.empty()) {
-            Pos u = S.peek();
-            S.pop();
+        while (!open.empty()) {
+            Pos u = open.peek();
+            open.pop();
+            closed.insert(u);
 
             if (u == dst) {
                 found = true;
@@ -194,14 +195,14 @@ public:
             TileInfo& uInfo = info(u);
             vector<Pos> adjs = getAdjs(u);
             for (auto& v : adjs) {
-                if (!S.contains(v) || blocked(v))
+                if (closed.find(v) != closed.end() || blocked(v))
                     continue;
 
                 TileInfo& vInfo = info(v);
                 double g = uInfo.g + u.distance(v);
                 if (g < vInfo.g) {
                     vInfo.g = g;
-                    S.update(v, vInfo.f());
+                    open.addOrUpdate(v, vInfo.f());
                     vInfo.prev = u;
                 }
             }
@@ -211,6 +212,7 @@ public:
             return emptyPath;
         }
 
+        // build path
         list<Pos> path;
         Pos current = dst;
         while (!current.nil()) {
