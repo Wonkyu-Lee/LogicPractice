@@ -247,6 +247,47 @@ public:
         }
         return r;
     }
+
+    void printStage() const {
+        for (int r = 0; r < _rows; ++r) {
+            for (int c = 0; c < _cols; ++c) {
+                cout << (_blocked[r][c] ? "B" : " ");
+            }
+            cout << endl;
+        }
+    }
+
+    void printPath(const list<Pos>& path) const {
+        if (path.empty()) {
+            printStage();
+            return;
+        }
+
+        set<Pos> nodes(path.begin(), path.end());
+        Pos start = path.front();
+        Pos goal = path.back();
+
+        for (int r = 0; r < _rows; ++r) {
+            for (int c = 0; c < _cols; ++c) {
+                Pos p(r, c);
+                bool onPath = nodes.find(p) != nodes.end();
+
+                char ch = ' ';
+                if (_blocked[r][c]) {
+                    ch = 'B';
+                } else if (p == start) {
+                    ch = '@';
+                } else if (p == goal) {
+                    ch = '@';
+                } else if (onPath) {
+                    ch = '+';
+                }
+
+                cout << ch;
+            }
+            cout << endl;
+        }
+    }
 };
 
 }
@@ -295,5 +336,7 @@ TEST_CASE("A* path finding", "[a star]") {
             cout << p << " ";
         }
         cout << endl;
+
+        tileMap.printPath(path);
     }
 }
