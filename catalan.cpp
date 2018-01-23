@@ -10,7 +10,7 @@ namespace {
 using namespace std;
 
 int catalanDp(int n) {
-   int ctl[n + 1];
+    int ctl[n + 1];
     ctl[0] = 1;
 
     for (int i = 1; i <= n; ++i) {

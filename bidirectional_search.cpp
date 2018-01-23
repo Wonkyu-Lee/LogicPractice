@@ -107,30 +107,32 @@ public:
     void setVisited(int u) {
         _visited[u] = true;
     }
+
+    int size() const {
+        return _queue.size();
+    }
 };
 
-int advanceBfs(const Graph& g, BfsData& bfsFrom, BfsData& bfsTo) {
-    if (bfsFrom.finished())
-        return -1;
+int searchLevel(const Graph& g, BfsData& bfsFrom, BfsData& bfsTo) {
+    for (int i = 0; i < bfsFrom.size(); ++i) {
+        int u = bfsFrom.pop();
 
-    int u = bfsFrom.pop();
+        if (bfsTo.visited(u)) {
+            return u;
+        }
 
-    if (bfsTo.visited(u)) {
-        return u;
-    }
-
-    Graph::Range adjs;
-    if (g.getAdjs(u, adjs)) {
-        for (auto it = adjs.first; it != adjs.second; ++it) {
-            int v = *it;
-            if (!bfsFrom.visited(v)) {
-                bfsFrom.setVisited(v);
-                bfsFrom.setPrev(v, u);
-                bfsFrom.push(v);
+        Graph::Range adjs;
+        if (g.getAdjs(u, adjs)) {
+            for (auto it = adjs.first; it != adjs.second; ++it) {
+                int v = *it;
+                if (!bfsFrom.visited(v)) {
+                    bfsFrom.setVisited(v);
+                    bfsFrom.setPrev(v, u);
+                    bfsFrom.push(v);
+                }
             }
         }
     }
-
     return -1;
 }
 
@@ -142,10 +144,11 @@ list<int> getShortestPath(const Graph& g, int from, int to) {
     BfsData bfsTo(to);
 
     while (!bfsFrom.finished() && !bfsTo.finished()) {
-        int collision = advanceBfs(g, bfsFrom, bfsTo);
+        int collision = searchLevel(g, bfsFrom, bfsTo);
         if (collision == -1) {
-            collision = advanceBfs(g, bfsTo, bfsFrom);
+            collision = searchLevel(g, bfsTo, bfsFrom);
         }
+
         if (collision != -1) {
             path.push_back(collision);
             int cur = bfsFrom.prev(collision);
