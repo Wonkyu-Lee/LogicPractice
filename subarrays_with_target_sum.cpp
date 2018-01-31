@@ -38,6 +38,7 @@ bool solve(int* array, int n, int targetSum) {
     return false;
 }
 
+// https://ide.geeksforgeeks.org/nW0uaUgW0U
 bool solve2(int* array, int n, int targetSum) {
     if (n == 0) {
         return false;

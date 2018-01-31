@@ -16,38 +16,38 @@ private:
         set<int> adjs;
     };
 
-    unordered_map<int, shared_ptr<Vertex>> vertices;
+    unordered_map<int, shared_ptr<Vertex>> _vertices;
     size_t createdCount = 0;
 
 public:
     int addVertex() {
         size_t newId = createdCount++;
-        vertices[newId] = make_shared<Vertex>();
+        _vertices[newId] = make_shared<Vertex>();
         return newId;
     }
 
     bool hasVertex(int u) const {
-        return vertices.find(u) != vertices.end();
+        return _vertices.find(u) != _vertices.end();
     }
 
     bool addEdge(int u, int v) {
-        if (vertices.find(u) == vertices.end()) {
+        if (_vertices.find(u) == _vertices.end()) {
             return false;
         }
 
-        if (vertices.find(v) == vertices.end()) {
+        if (_vertices.find(v) == _vertices.end()) {
             return false;
         }
 
-        vertices[u]->adjs.insert(v);
-        vertices[v]->adjs.insert(u);
+        _vertices[u]->adjs.insert(v);
+        _vertices[v]->adjs.insert(u);
         return true;
     }
 
     using Range = pair<set<int>::const_iterator, set<int>::const_iterator>;
     bool getAdjs(int u, Range& range) const {
-        auto found = vertices.find(u);
-        if (found == vertices.end()) {
+        auto found = _vertices.find(u);
+        if (found == _vertices.end()) {
             return false;
         }
 
