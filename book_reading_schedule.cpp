@@ -148,20 +148,22 @@ void allGroupings(int n, int groups, function<void(const list<pair<int, int>>& r
 
 void printBookReadingSchedule(const vector<int>& pages, int days) {
     int n = pages.size();
-    int sum[n];
+    int sum[n + 1];
     sum[0] = 0;
-    for (int i = 1; i < n; ++i) {
+    for (int i = 1; i <= n; ++i) {
         sum[i] = sum[i - 1] + pages[i - 1];
     }
 
-    double avg = sum[n - 1] / n;
+    double avg = sum[n] / (double)days;
     double optCost = numeric_limits<double>::infinity();
     list<pair<int, int>> optSchedule;
 
     allGroupings(pages.size(), days, [&](const list<pair<int, int>>& ranges){
         double cost = 0;
         for (auto& range : ranges) {
-            int rangeSum = sum[range.second] - sum[range.first];
+            int s = range.first + 1;
+            int e = range.second + 1;
+            int rangeSum = sum[e] - sum[s - 1];
             cost += abs(rangeSum - avg);
         }
         if (cost < optCost) {
@@ -172,20 +174,107 @@ void printBookReadingSchedule(const vector<int>& pages, int days) {
 
     for (auto& range : optSchedule) {
         for (int i = range.first; i <= range.second; ++i) {
-            printf("%d ", i);
+            printf("%d ", i + 1);
         }
         printf("\n");
     }
     printf("\n");
 }
 
-
-
 } // namespace sol2
 
+namespace sol3 {
+    // dp[i][k] = min(dp[i][k],dp[i-1][j]+diff(sum(j..k)-avg)
+
+void printBookReadingSchedule(const vector<int>& pages, int nDays) {
+    int nChapters = pages.size();
+
+    if (nChapters < nDays) {
+        cout << "read a chapter per day." << endl;
+        return;
+    }
+
+    if (nDays == 0) {
+        cout << "no day to read." << endl;
+        return;
+    }
+
+    // store optimal costs, each cost means the sum of abs(deviation)s
+    int dp[nDays + 1][nChapters + 1];
+
+    // for constructing path
+    int prev[nDays + 1][nChapters + 1];
+    memset(prev, -1, sizeof(prev));
+
+    // accumulate sum
+    int sum[nChapters + 1];
+    sum[0] = 0;
+    for (int i = 1; i <= nChapters; ++i) {
+        sum[i] = sum[i - 1] + pages[i - 1];
+    }
+    int avg = round(sum[nChapters]/(double)nDays);
+
+    // read all chapters in one day
+    for (int j = 1; j <= nChapters; ++j) {
+        dp[1][j] = abs(sum[j] - avg);
+    }
+
+    for (int i = 2; i <= nDays; ++i) {
+        for (int j = 2; j <= nChapters; ++j) {
+            if (i == j) {
+                // if number of days equals to chapters, read a chapter per day
+                dp[i][j] = dp[i - 1][j - 1] + abs(sum[j] - sum[j - 1] - avg);
+                prev[i][j] = j - 1;
+            } else {
+                // dp[i][j] = min of (dp[i-1][k] + abs(sum(k+1..j) - avg) for k=i-1..j-1
+                dp[i][j] = numeric_limits<int>::max();
+                for (int k = i - 1; k < j; ++k) {
+                    int rangeSum = sum[j] - sum[k];
+                    int cost = dp[i - 1][k] + abs(rangeSum - avg);
+                    if (cost < dp[i][j]) {
+                        dp[i][j] = cost;
+                        prev[i][j] = k;
+                    }
+                }
+            }
+        }
+    }
+
+    // construct path
+    list<int> path;
+    {
+        int i = nDays;
+        int j = nChapters;
+
+        while (prev[i][j] != -1) {
+            int k = prev[i][j];
+            path.push_front(k);
+            i--;
+            j = k;
+        }
+        path.push_back(nChapters);
+    }
+
+    // print
+    int day = 1;
+    int s = 0;
+    for (auto e : path) {
+        printf("Day %d: ", day);
+        while (s < e) {
+            printf("%d ", s + 1);
+            ++s;
+        }
+        printf("\n");
+        ++day;
+    }
+}
+
+
+} // namespace sol3
+
 TEST_CASE("Book reading schedule", "[book reading schedule]") {
-//    cout << sol1::BookReadingSchedule({8, 5, 6, 12}, 3) << endl;
-//    cout << sol1::BookReadingSchedule({10, 5, 5}, 2) << endl;
+    cout << sol1::BookReadingSchedule({8, 5, 6, 12}, 3) << endl;
+    cout << sol1::BookReadingSchedule({10, 5, 5}, 2) << endl;
 
 //    sol2::allGroupings(5, 3, [](const list<pair<int, int>>& ranges) {
 //        for (auto& range : ranges) {
@@ -194,6 +283,10 @@ TEST_CASE("Book reading schedule", "[book reading schedule]") {
 //        printf("\n");
 //    });
 
-    sol2::printBookReadingSchedule({8, 5, 6, 12}, 3);
-    sol2::printBookReadingSchedule({10, 5, 5}, 2);
+//    sol2::printBookReadingSchedule({8, 5, 6, 12}, 3);
+//    sol2::printBookReadingSchedule({10, 5, 5}, 2);
+
+
+//    sol3::printBookReadingSchedule({8, 5, 6, 12}, 3);
+//    sol3::printBookReadingSchedule({10, 5, 5}, 2);
 }
