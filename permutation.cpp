@@ -61,8 +61,24 @@ TEST_CASE("Permutation", "[permutation]") {
         REQUIRE(countPermutations(3, 3) == 6);
     }
 
-    SECTION("Visit possible permutations") {
-        int arr[] = {0, 0, 1, 1};
+//    SECTION("Visit possible permutations") {
+//        int arr[] = {0, 0, 1, 1};
+//        int count = 0;
+//        int n = sizeof(arr)/sizeof(int);
+//        int r = 3;
+//        solution1::permutation(arr, n, r, [&](int result[], int n) {
+//            for (int i = 0; i < n; ++i) {
+//                printf("%d ", result[i]);
+//            }
+//            printf("\n");
+//            ++count;
+//        });
+//        printf("\n");
+//    }
+
+    // 2snjzsbw
+    SECTION("Another input") {
+        int arr[] = {2, 1, 2, 3, 2};
         int count = 0;
         int n = sizeof(arr)/sizeof(int);
         int r = 3;
@@ -74,7 +90,9 @@ TEST_CASE("Permutation", "[permutation]") {
             ++count;
         });
         printf("\n");
+        printf("count = %d\n", count);
     }
+
 }
 
 } // namespace

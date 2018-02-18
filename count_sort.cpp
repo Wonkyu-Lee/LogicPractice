@@ -38,7 +38,7 @@ void countSort(int arr[], int n, int K) {
         ++c[arr[i]];
     }
 
-    for (int i = 1; i < n; ++i) {
+    for (int i = 1; i < K; ++i) {
         c[i] += c[i - 1];
     }
 

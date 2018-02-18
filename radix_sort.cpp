@@ -37,7 +37,7 @@ void radixSort(int arr[], int n, int radix, int K) {
 }
 
 TEST_CASE("radix sort", "[radix sort]") {
-    int arr[] = {423, 864, 152, 614, 209, 319, 910, 576, 710, 6, 28};
+    int arr[] = {423, 864, 162, 614, 209, 319, 910, 566, 710, 6, 28};
     int n = sizeof(arr)/sizeof(int);
     radixSort(arr, n, 10, 3);
 

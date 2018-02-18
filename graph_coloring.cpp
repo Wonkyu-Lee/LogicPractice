@@ -71,19 +71,18 @@ public:
 
 private:
     bool paint(int i, int color) {
-        if (valid(i, color)) {
-            _vertexColors[i] = color;
-            if (i == _graph.getVertexCount() - 1) {
-                return true;
-            }
+        if (!valid(i, color)) {
+            return false;
+        }
 
-            bool r = false;
-            for (int c = 0; c < _colorCount; ++c) {
-                r = paint(i + 1, c);
-                if (r)
-                    break;
-            }
-            return r;
+        _vertexColors[i] = color;
+        if (i == _graph.getVertexCount() - 1) {
+            return true;
+        }
+
+        for (int c = 0; c < _colorCount; ++c) {
+            if (paint(i + 1, c))
+                return true;
         }
 
         return false;
@@ -105,6 +104,80 @@ private:
     bool _possible;
 };
 
+
+// 가정: 모두다 connected component라고 가정한 건데, 구려.
+class GraphColoring2 {
+public:
+    GraphColoring2(const Graph& graph, int colorCount)
+            : _graph(graph)
+            , _colorCount(colorCount)
+            , _vertexColors(_graph.getVertexCount(), -1) {
+
+        if (_graph.getVertexCount() == 0 || _colorCount == 0)
+            _possible = false;
+
+        _possible = paint(0, 0, 0);
+    }
+
+    bool possible() const {
+        return _possible;
+    }
+
+    const vector<int>& getVertexColors() const {
+        return _vertexColors;
+    }
+
+private:
+    bool valid(int i, int color) const {
+        if (_vertexColors[i] != -1) {
+            return false;
+        }
+
+        auto& adjs = _graph.getAdjacency(i);
+        for (auto j : adjs) {
+            if (_vertexColors[j] == color) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool paint(int i, int color, int colored) {
+        if (!valid(i, color)) {
+            return false;
+        }
+
+        _vertexColors[i] = color;
+        ++colored;
+
+        if (colored == _graph.getVertexCount()) {
+            return true;
+        }
+
+        auto& adjs = _graph.getAdjacency(i);
+        for (auto j : adjs) {
+            for (int c = 0; c < _colorCount; ++c) {
+                if (c == color)
+                    continue;
+
+                if (paint(j, c, colored)) {
+                    return true;
+                }
+            }
+        }
+
+        _vertexColors[i] = -1;
+
+        return false;
+    }
+
+    const Graph& _graph;
+    vector<int> _vertexColors;
+    int _colorCount;
+    bool _possible;
+};
+
 }
 
 TEST_CASE("Graph coloring", "[graph coloring]") {
@@ -112,7 +185,7 @@ TEST_CASE("Graph coloring", "[graph coloring]") {
     Graph g(6);
     g.addEdges({{0, 1}, {0, 2}, {0, 3}, {0, 5}, {1, 4}, {1, 5}, {2, 5}, {3, 4}, {3, 5}, {4, 5}});
 
-    GraphColoring coloring(g, 3);
+    GraphColoring2 coloring(g, 3);
     printf("Possible? %s\n", coloring.possible() ? "yes" : "no");
 
     if (coloring.possible()) {
