@@ -10,104 +10,103 @@ using namespace std;
 namespace {
 
 class Sudoku {
-    struct Cell {
-        bool fixed{false};
-        int value{0};
-        unordered_set<int> candidates;
-        Cell() {}
-    };
-
-    Cell table[9][9];
+    enum { M = 3, N = 9 };
+    int table[N][N];
 
 public:
     Sudoku(int sudoku[]) {
-        for (int i = 0; i < 81; ++i) {
-            int r = i / 9;
-            int c = i % 9;
-            table[r][c].value = sudoku[i];
-        }
-
-        updateCandidates();
-        goForward();
-    }
-
-    void updateCandidates() {
-        for (int r = 0; r < 9; ++r) {
-            for (int c = 0; c < 9; ++c) {
-                if (table[r][c].value == 0) {
-                    updateCandidates(r, c);
-                } else {
-                    table[r][c].fixed = true;
-                }
-            }
+        for (int i = 0; i < N * N; ++i) {
+            int r = i / N;
+            int c = i % N;
+            table[r][c] = sudoku[i];
         }
     }
 
-    void updateCandidates(int r, int c) {
-        bool possible[10];
-        for (int i = 0; i <= 9; ++i) {
-            possible[i] = true;
-        }
-
-        for (int i = 0; i < 9; ++i) {
-            int value = table[i][c].value;
-            possible[value] = false;
-        }
-
-        for (int i = 0; i < 9; ++i) {
-            int value = table[r][i].value;
-            possible[value] = false;
-        }
-
-        int chunkRow = r / 3;
-        int chunkCol = c / 3;
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                int row = chunkRow * 3 + i;
-                int col = chunkCol * 3 + j;
-                int value = table[row][col].value;
-                possible[value] = false;
-            }
-        }
-
-        for (int i = 1; i <= 9; ++i) {
-            if (possible[i]) {
-                table[r][c].candidates.insert(i);
-            }
-        }
-    }
-
-    void goForward() {
-        bool updated = true;
-
-        while (updated) {
-            updated = false;
-
-            for (int r = 0; r < 9; ++r) {
-                for (int c = 0; c < 9; ++c) {
-                    if (!table[r][c].fixed) {
-                        int debug = table[r][c].candidates.size();
-                        if (table[r][c].candidates.size() == 1) {
-                            int value = *table[r][c].candidates.begin();
-                            table[r][c].candidates.clear();
-                            table[r][c].value = value;
-                            table[r][c].fixed = true;
-                            updated = true;
-                        }
-                    }
-
-                }
-            }
-        }
-    }
 
     void print() {
-        for (int r = 0; r < 9; ++r) {
-            for (int c = 0; c < 9; ++c) {
-                cout << table[r][c].value << " ";
+        for (int r = 0; r < N; ++r) {
+            for (int c = 0; c < N; ++c) {
+                cout << table[r][c] << " ";
             }
             cout << endl;
         }
+    }
+
+    bool solve() {
+        int row, col;
+        if (!findEmptySlot(row, col)) {
+            return true;
+        }
+
+        for (int num = 1; num <= N; ++num) {
+            if (!used(row, col, num)) {
+                table[row][col] = num;
+                if (solve()) {
+                    return true;
+                }
+                table[row][col] = 0;
+            }
+        }
+
+        return false;
+    }
+
+private:
+    bool findEmptySlot(int& row, int& col) {
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                if (table[i][j] == 0) {
+                    row = i;
+                    col = j;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    bool used(int row, int col, int num) {
+        return usedInRow(row, num) ||
+               usedInCol(col, num) ||
+               usedInBlock(row, col, num);
+    }
+
+    bool usedInRow(int row, int num) {
+        for (int i = 0; i < N; ++i) {
+            if (table[row][i] == num) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool usedInCol(int col, int num) {
+        for (int i = 0; i < N; ++i) {
+            if (table[i][col] == num) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool usedInBlock(int row, int col, int num) {
+        int rGroup = row / M;
+        int cGroup = col / M;
+
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < M; ++j) {
+                int r = rGroup * M + i;
+                int c = cGroup * M + j;
+                if (table[r][c] == num) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 };
 
@@ -115,22 +114,24 @@ public:
 
 TEST_CASE("Sudoku", "[sudoku]") {
 
-//    SECTION("Sudoku 1") {
-//        int input[] ={
-//            3, 0, 6, 5, 0, 8, 4, 0, 0,
-//            5, 2, 0, 0, 0, 0, 0, 0, 0,
-//            0, 8, 7, 0, 0, 0, 0, 3, 1,
-//            0, 0, 3, 0, 1, 0, 0, 8, 0,
-//            9, 0, 0, 8, 6, 3, 0, 0, 5,
-//            0, 5, 0, 0, 9, 0, 6, 0, 0,
-//            1, 3, 0, 0, 0, 0, 2, 5, 0,
-//            0, 0, 0, 0, 0, 0, 0, 7, 4,
-//            0, 0, 5, 2, 0, 6, 3, 0, 0
-//        };
-//
-//        Sudoku sudoku(input);
-//        sudoku.print();
-//    }
+    SECTION("Sudoku 1") {
+        int input[] ={
+            3, 0, 6, 5, 0, 8, 4, 0, 0,
+            5, 2, 0, 0, 0, 0, 0, 0, 0,
+            0, 8, 7, 0, 0, 0, 0, 3, 1,
+            0, 0, 3, 0, 1, 0, 0, 8, 0,
+            9, 0, 0, 8, 6, 3, 0, 0, 5,
+            0, 5, 0, 0, 9, 0, 6, 0, 0,
+            1, 3, 0, 0, 0, 0, 2, 5, 0,
+            0, 0, 0, 0, 0, 0, 0, 7, 4,
+            0, 0, 5, 2, 0, 6, 3, 0, 0
+        };
+
+        Sudoku sudoku(input);
+        bool success = sudoku.solve();
+        cout << (success ? "Success" : "Failed") << endl;
+        sudoku.print();
+    }
 
     SECTION("Sudoku 2") {
         int input[] = {
@@ -146,6 +147,8 @@ TEST_CASE("Sudoku", "[sudoku]") {
         };
 
         Sudoku sudoku(input);
+        bool success = sudoku.solve();
+        cout << (success ? "Success" : "Failed") << endl;
         sudoku.print();
     }
 }
