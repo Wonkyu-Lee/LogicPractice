@@ -21,6 +21,19 @@ int countPermutations(int n, int r)
     return n * countPermutations(n - 1, r - 1);
 }
 
+int countPermutationsWithDuplicates(const vector<int>& counts) {
+    int i = 1;
+    int x = 1;
+    for (auto count : counts) {
+        for (int j = 1; j <= count; ++j) {
+            x *= i++;
+            x /= j;
+        }
+    }
+
+    return x;
+}
+
 namespace solution1 {
 
 using Callback = function<void(int[], int)>;
@@ -93,6 +106,11 @@ TEST_CASE("Permutation", "[permutation]") {
         printf("count = %d\n", count);
     }
 
+
+    SECTION("Count of permutations with duplicates") {
+        using namespace solution1;
+        REQUIRE(countPermutationsWithDuplicates({2, 3}) == (5*4*3*2*1)/((2*1)*(3*2*1)));
+    }
 }
 
 } // namespace

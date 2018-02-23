@@ -20,6 +20,32 @@ int countCombinations(int n, int r)
     return countCombinations(n - 1, r - 1) + countCombinations(n - 1, r);
 }
 
+int countCombinations2(int n, int k) {
+    if (n - k < k)
+        k = n - k;
+
+    int r = 1;
+    for (int i = 0; i < k; ++i) {
+        r *= n - i;
+        r /= i + 1;
+    }
+    return r;
+}
+
+int countCombinations3(int n , int k) {
+    if (n - k < k)
+        k = n - k;
+
+    int d = n - k + 1;
+    int x = 1;
+    for (int i = 1; i <= k; ++i) {
+        x *= d++;
+        x /= i;
+    }
+
+    return x;
+}
+
 namespace solution1 {
 
 using Callback = function<void(int[], int)>;
@@ -339,6 +365,15 @@ TEST_CASE("Combination", "[combination]") {
         int array[] = {2, 1, 0, 1};
         trace2::combination(array, 4, 3);
         printf("\n");
+    }
+
+
+    SECTION("Count combinations") {
+        int a = countCombinations(14, 5);
+        int b = countCombinations2(14, 5);
+        int c = countCombinations3(14, 5);
+
+        REQUIRE((a == b && b == c));
     }
 }
 

@@ -100,7 +100,7 @@ void findSubsetSizeK(int array[], int n, int k, int sum, function<void(vector<in
 } // namespace
 
 TEST_CASE("Subsets with target sum", "[subsets_with_target_sum]") {
-    int array[] = {1, 4, 45, 6, 10, -8, 12};
+    int array[] = {1, 2, 4, 4, 45, 6, 10, -8, 12};
     int n = sizeof(array)/sizeof(int);
 
     auto print = [](vector<int>& v) {
@@ -124,23 +124,27 @@ TEST_CASE("Subsets with target sum", "[subsets_with_target_sum]") {
 //    findPairs(array, n, 16, print);
 //    findTriplets(array, n, 2, print);
 
-    cout << "k=0, target sum = 16" << endl;
-    findSubsetSizeK(array, n, 0, 16, print);
-    cout << endl;
+//    cout << "k=0, target sum = 16" << endl;
+//    findSubsetSizeK(array, n, 0, 16, print);
+//    cout << endl;
+//
+//    cout << "k=1, target sum = 45" << endl;
+//    findSubsetSizeK(array, n, 1, 45, print);
+//    cout << endl;
+//
+//    cout << "k=2, target sum = 16" << endl;
+//    findSubsetSizeK(array, n, 2, 16, print);
+//    cout << endl;
+//
+//    cout << "k=3, target sum = 11" << endl;
+//    findSubsetSizeK(array, n, 3, 11, print);
+//    cout << endl;
+//
+//    cout << "k=4, target sum = 20" << endl;
+//    findSubsetSizeK(array, n, 4, 20, print);
+//    cout << endl;
 
-    cout << "k=1, target sum = 45" << endl;
-    findSubsetSizeK(array, n, 1, 45, print);
-    cout << endl;
-
-    cout << "k=2, target sum = 16" << endl;
-    findSubsetSizeK(array, n, 2, 16, print);
-    cout << endl;
-
-    cout << "k=3, target sum = 11" << endl;
-    findSubsetSizeK(array, n, 3, 11, print);
-    cout << endl;
-
-    cout << "k=4, target sum = 20" << endl;
-    findSubsetSizeK(array, n, 4, 20, print);
+    cout << "k=2, target sum = 8" << endl;
+    findSubsetSizeK(array, n, 2, 6, print);
     cout << endl;
 }
