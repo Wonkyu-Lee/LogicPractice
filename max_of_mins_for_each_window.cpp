@@ -12,6 +12,13 @@ namespace {
 
 namespace sol1 {
 
+/* index:  0  1  2  3  4  5  6  7  8
+ * input:  2  5  3  5  1  7  3  8  4
+ *     i:                    ^
+ *     r: -1  2  2  3 -1  1  1
+ *
+ *    st:  1
+ */
 void findLeftSmallers(int arr[], int n, int left[])
 {
     stack<int> st;
