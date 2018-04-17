@@ -11,6 +11,7 @@ using namespace std;
 
 namespace sol1 {
 
+// https://www.geeksforgeeks.org/optimal-read-list-given-number-days/
 class BookReadingSchedule {
 private:
     list<int> optimalPath;

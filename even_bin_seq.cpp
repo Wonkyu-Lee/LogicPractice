@@ -19,7 +19,7 @@ int countSeq(int n)
     function<int(int, int)> cs = [&dp, &cs](int n, int diff) {
         if (n < abs(diff)) return 0;
         if (n == 1 && diff == 0) return 2;
-        if (n == 1 && abs(diff) == 1) return 1;
+        if (n == 1 && abs(diff) == 1) return 1; // TODO: 2인 것 같다.
         if (dp[n][n + diff] != -1) return dp[n][n + diff];
         int count = cs(n - 1, diff - 1) + 2 * cs(n - 1, diff) + cs(n - 1, diff + 1);
         return dp[n][n + diff] = count;

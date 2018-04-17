@@ -44,7 +44,7 @@ int catalan(int n) {
 
 void printParentheses(int pairCount) {
     if (pairCount <= 0) return;
-    char str[pairCount * 2 + 1];
+    char str[pairCount * 2 + 1]; // TODO: +1은 마지막에 '\0' 넣어줄 것임.
     int count = printParentheses(str, pairCount, 0, 0);
     cout << "count: " << count << endl;
     cout << "catalan: " << catalan(pairCount) << endl;
